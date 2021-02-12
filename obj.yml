@@ -1,0 +1,38 @@
+#Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: $ENV
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: dummy
+          image: g0d3l/dummy-app
+          env:
+            - name:  ENV
+          value: $ENV
+          ports:
+            - containerPort: 8080
+              ---
+              #Service
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: app-svc
+              namespace: $ENV
+              spec:
+                type: ClusterIP
+              ports:
+                - port: 80
+              targetPort: 8080
+              selector:
+                app: app
